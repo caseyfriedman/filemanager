@@ -1,2 +1,7 @@
 flask
 redis
+minio
+opensearch-py
+pymongo
+dotenv
+psycopg2
