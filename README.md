@@ -1,1 +1,1 @@
-Simple experiment for best solution to storing large number of files locally with arbitrary metadata.
+Simple experiment for identifying the best solution to storing large number of files arbitrary metadata.
