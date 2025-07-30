@@ -2,13 +2,12 @@ import os
 import time
 
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
 import redis
 from flask import Flask, jsonify
 
-from MockDataCreator import MockDataCreator
-from services.PostgresService import PostgresService
+from models.FileEntry import FileEntry
 from services.MinioService import MinioService
-from services.FileUploadService import FileUploadService
 from flask import request
 
 app = Flask(__name__)
@@ -16,7 +15,11 @@ cache = redis.Redis(host='localhost', port=6379)
 
 load_dotenv()
     
-POSTGRES_CONN = os.getenv("POSTGRES_CONN")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_CONN")
+db = SQLAlchemy()
+
+
+db.init_app(app)
 
 def get_hit_count():
     retries = 5
@@ -36,12 +39,13 @@ def hello():
 
 @app.route('/query')
 def query():
-    svc = PostgresService(POSTGRES_CONN)
-    metadata = {}
+    query_metadata = {}
     for key, value in request.args.items():
-        metadata[key] = value
-    
-    return svc.query(metadata)
+        query_metadata[key] = value
+
+    results = db.session.query(FileEntry).filter(FileEntry.metadata_.contains(query_metadata)).limit(25).all()
+    results = db.session.query(FileEntry).filter(getattr(FileEntry, "filename") == "no_filename").limit(25).all()
+    return results
 
     
 @app.route('/upload')

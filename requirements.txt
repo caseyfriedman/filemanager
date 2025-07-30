@@ -5,3 +5,5 @@ opensearch-py
 pymongo
 dotenv
 psycopg2-binary
+sqlAlchemy
+Flask-SQLAlchemy
